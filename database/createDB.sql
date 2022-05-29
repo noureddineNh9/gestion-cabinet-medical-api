@@ -11,10 +11,11 @@ CREATE TABLE Utilisateur(
    prenom varchar(25) NOT NULL,
    email varchar(50) NOT NULL,
    motDePasse varchar(80) NOT NULL,
-   situationFamilliale ENUM('marie', 'celibataire', 'Divorce', 'pacse', 'veuf') NOT NULL,
+   situationFamilliale ENUM('marie', 'celibataire', 'divorce', 'pacse', 'veuf') NOT NULL,
    genre ENUM('homme', 'femme') NOT NULL,
    tel varchar(25) NOT NULL,
-   adresse varchar(255) NOT NULL,
+   ville varchar(30),
+   adresse varchar(255),
    imageProfile varchar(255),
    dateNaissance date,
    type ENUM('patient', 'medecin', 'secretaire') NOT NULL
@@ -65,7 +66,7 @@ CREATE TABLE RDV(
    idRDV INT PRIMARY KEY AUTO_INCREMENT,
    dateCreation date DEFAULT CURRENT_DATE,
    dateRDV date NOT NULL,
-   type ENUM('visite', 'constrol') NOT NULL,
+   type ENUM('visite', 'controle') NOT NULL,
    status ENUM('enAttente', 'confirme', 'termine') NOT NULL,
    idPatient INT NOT NULL,
    idMedecin INT NOT NULL,
@@ -86,9 +87,9 @@ CREATE TABLE ElementSante(
 CREATE TABLE Consultation(
    idConsultation INT PRIMARY KEY AUTO_INCREMENT,
    motif text,
-   dateCreation date DEFAULT CURRENT_DATE,
+   date date DEFAULT CURRENT_DATE,
    duree float,
-   type ENUM('visite', 'constrol') NOT NULL,
+   type ENUM('visite', 'controle') NOT NULL,
    hauteur float,
    poid float,
    remarques text,
@@ -136,7 +137,7 @@ CREATE TABLE Audio(
    date date DEFAULT CURRENT_DATE,
    idCompteRendu INT,
    idSecretaire INT,
-   FOREIGN KEY (idCompteRendu) REFERENCES CompteRendu(idCompteRendu),
+   FOREIGN KEY (idCompteRendu) REFERENCES CompteRendu(idCompteRendu) ON DELETE CASCADE,
    FOREIGN KEY (idSecretaire) REFERENCES Secretaire(idUtilisateur)
 );
 
@@ -159,3 +160,11 @@ CREATE TABLE Document(
    idExamen INT,
    FOREIGN KEY (idExamen) REFERENCES Examen(idExamen)
 );
+
+
+CREATE TABLE Admin(
+   login varchar(50) PRIMARY KEY,
+   password varchar(100) NOT NULL
+);
+
+INSERT INTO Admin VALUES('admin', 'admin');

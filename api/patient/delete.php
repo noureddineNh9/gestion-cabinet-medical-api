@@ -6,7 +6,7 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 include_once '../../utils/functions.php';
-include '../../database/connection.php';
+include '../../database/connectionPDO.php';
 include '../../services/patientService.php';
 
 
@@ -16,7 +16,6 @@ if (isset($_GET['id'])) {
    
    $patientService = new PatientService($conn);
    $res = $patientService->delete($id);
-   mysqli_close($conn);
    
    if ($res) {
       http_response_code(200);

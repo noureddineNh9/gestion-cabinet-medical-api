@@ -5,7 +5,7 @@ header("Access-Control-Allow-Origin: *");
 header("content-type: application/json");
 
 
-include '../../database/connection.php';
+include '../../database/connectionPDO.php';
 include '../../services/patientService.php';
 
 $patientService = new PatientService($conn);

@@ -2,9 +2,8 @@
 
 header("Access-Control-Allow-Origin: *");
 
-include_once '../../utils/functions.php';
 include '../../database/connectionPDO.php';
-include '../../services/userService.php';
+
 
 
 

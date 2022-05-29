@@ -56,7 +56,7 @@ if (
             $secretaire->dateNaissance = $_POST['dateNaissance'];
 
             $secretaireService = new SecretaireService($conn);
-            $res = $secretaireService->put($secretaire, $motDePasse);
+            $res = $secretaireService->put($secretaire);
             
             if ($res) {
                echo json_encode($res);
@@ -72,13 +72,3 @@ if (
    http_response_code(400);
    echo json_encode("form non valide");
 }
-
-
-
-
-
-
-
-
-
-?>
