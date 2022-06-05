@@ -6,36 +6,31 @@ header("content-type: application/json");
 include_once '../../utils/functions.php';
 include '../../database/connectionPDO.php';
 
-if (isset($_POST['nom']) && 
-   isset($_POST['description']) && 
-   isset($_POST['idCompteRendu']) && 
-   isset($_POST['idSecretaire']) && 
-   isset($_FILES['audio'])) 
-{
+if (
+   isset($_POST['idCompteRendu']) &&
+   isset($_POST['idSecretaire']) &&
+   isset($_FILES['audio'])
+) {
 
-   if (!empty($_POST['nom']) &&
+   if (
       !empty($_POST['idSecretaire']) &&
-      !empty($_POST['idCompteRendu']))
-   {
+      !empty($_POST['idCompteRendu'])
+   ) {
 
-      $nom = $_POST['nom'];
-      $description = $_POST['description'];
       $idCompteRendu = $_POST['idCompteRendu'];
       $idSecretaire = $_POST['idSecretaire'];
-      $url=null;
+      $url = null;
 
       $uploadResult = uploadFile($_FILES['audio'], "audio");
 
       if ($uploadResult) {
-         $url = $uploadResult; 
+         $url = $uploadResult;
       }
 
       try {
-         $s = $conn->prepare("INSERT INTO Audio(nom, description, idCompteRendu, url, idSecretaire) 
-                              values(:nom, :description, :idCompteRendu, :url, :idSecretaire)");
+         $s = $conn->prepare("INSERT INTO Audio( idCompteRendu, url, idSecretaire) 
+                              values(:idCompteRendu, :url, :idSecretaire)");
 
-         $s->bindParam('nom', $nom);
-         $s->bindParam('description', $description);
          $s->bindParam('url', $url);
          $s->bindParam('idCompteRendu', $idCompteRendu);
          $s->bindParam('idSecretaire', $idSecretaire);
@@ -46,16 +41,15 @@ if (isset($_POST['nom']) &&
          $data = $res2->fetch(PDO::FETCH_ASSOC);
 
          echo json_encode($data);
-
       } catch (PDOException $e) {
          http_response_code(400);
          echo json_encode($e->getMessage());
       }
-   }else{
+   } else {
       http_response_code(400);
       echo json_encode('erreur 2');
    }
-}else{
+} else {
    http_response_code(400);
    echo json_encode("form non valide");
 }

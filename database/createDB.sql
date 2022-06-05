@@ -131,8 +131,6 @@ CREATE TABLE CompteRendu(
 
 CREATE TABLE Audio(
    idAudio INT PRIMARY KEY AUTO_INCREMENT,
-   nom varchar(50) NOT NULL,
-   description text,
    url varchar(255) NOT NULL,
    date date DEFAULT CURRENT_DATE,
    idCompteRendu INT,

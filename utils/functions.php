@@ -56,7 +56,7 @@ function uploadFile($file, $type){
          $file_explode = explode('.',$file_name);
          $file_ext = end($file_explode);
       
-         $extensions = ["pdf", "doc", "docx", "txt"];
+         $extensions = ["pdf", "doc", "docx", "txt", "jpeg", "png", "jpg"];
       
          if(in_array($file_ext, $extensions) === true){   
             $new_file_name = uniqid().".$file_ext";
@@ -83,6 +83,3 @@ function restructureFilesArray($files)
     }
     return $output;
 }
-
-
-?>

@@ -32,7 +32,7 @@ class PatientService
 
    function getAll()
    {
-      $query = "SELECT u.idUtilisateur, u.cin, u.nom, u.prenom, u.email, u.situationFamilliale, u.genre, u.tel, u.adresse, u.imageProfile, u.dateNaissance, u.type, p.groupeSanguin, p.decede
+      $query = "SELECT u.idUtilisateur, u.cin, u.nom, u.prenom, u.email, u.situationFamilliale, u.genre, u.tel, u.adresse, u.ville, u.imageProfile, u.dateNaissance, u.type, p.groupeSanguin, p.decede
       FROM Utilisateur u, Patient p
       WHERE u.type='patient' AND u.idUtilisateur=p.idUtilisateur";
 
@@ -50,7 +50,7 @@ class PatientService
    {
       try {
 
-         $query = "INSERT INTO Utilisateur VALUES(null, :cin, :nom, :prenom,:email, :motDePasse, :situationFamilliale, :genre, :tel, :adresse, :imageProfile, :dateNaissance, 'patient')";
+         $query = "INSERT INTO Utilisateur VALUES(null, :cin, :nom, :prenom,:email, :motDePasse, :situationFamilliale, :genre, :tel, :adresse, :ville, :imageProfile, :dateNaissance, 'patient')";
 
          $stm = $this->conn->prepare($query);
 
@@ -63,6 +63,7 @@ class PatientService
          $stm->bindParam('genre', $p->genre);
          $stm->bindParam('tel', $p->tel);
          $stm->bindParam('adresse', $p->adresse);
+         $stm->bindParam('ville', $p->ville);
          $stm->bindParam('imageProfile', $p->imageProfile);
          $stm->bindParam('dateNaissance', $p->dateNaissance);
 
@@ -77,7 +78,7 @@ class PatientService
 
             if ($res2) {
 
-               $query = "SELECT u.idUtilisateur, u.cin, u.nom, u.prenom, u.email, u.situationFamilliale, u.genre, u.tel, u.adresse, u.imageProfile, u.dateNaissance, u.type, p.groupeSanguin, p.decede
+               $query = "SELECT u.idUtilisateur, u.cin, u.nom, u.prenom, u.email, u.situationFamilliale, u.genre, u.tel, u.adresse, u.ville, u.imageProfile, u.dateNaissance, u.type, p.groupeSanguin, p.decede
                FROM Utilisateur u, Patient p
                WHERE u.idUtilisateur=p.idUtilisateur 
                AND u.idUtilisateur = $idUtilisateur";
@@ -137,6 +138,7 @@ class PatientService
             genre = :genre,
             tel = :tel,
             adresse = :adresse,
+            ville = :ville,
             dateNaissance = :dateNaissance
             WHERE idUtilisateur = :idUtilisateur";
 
@@ -150,6 +152,7 @@ class PatientService
          $stm->bindParam('genre', $p->genre);
          $stm->bindParam('tel', $p->tel);
          $stm->bindParam('adresse', $p->adresse);
+         $stm->bindParam('ville', $p->ville);
          $stm->bindParam('dateNaissance', $p->dateNaissance);
          $stm->bindParam('idUtilisateur', $p->idUtilisateur);
 
@@ -169,7 +172,7 @@ class PatientService
 
             $s->execute();
 
-            $query2 = "SELECT u.idUtilisateur, u.cin, u.nom, u.prenom, u.email, u.situationFamilliale, u.genre, u.tel, u.adresse, u.imageProfile, u.dateNaissance, u.type, p.groupeSanguin, p.decede
+            $query2 = "SELECT u.idUtilisateur, u.cin, u.nom, u.prenom, u.email, u.situationFamilliale, u.genre, u.tel, u.adresse, u.ville, u.imageProfile, u.dateNaissance, u.type, p.groupeSanguin, p.decede
          FROM Utilisateur u, Patient p
          WHERE u.idUtilisateur=p.idUtilisateur AND u.idUtilisateur=$p->idUtilisateur";
 

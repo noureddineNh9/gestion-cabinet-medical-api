@@ -14,6 +14,7 @@ if (
    isset($_POST['nom']) and
    isset($_POST['prenom']) and
    isset($_POST['adresse']) and
+   isset($_POST['ville']) and
    isset($_POST['email']) and
    isset($_POST['motDePasse']) and
    isset($_POST['genre']) and
@@ -51,6 +52,7 @@ if (
       $patient->prenom = $_POST['prenom'];
       $patient->cin = $_POST['cin'];
       $patient->adresse = $_POST['adresse'];
+      $patient->ville = $_POST['ville'];
       $patient->email = $_POST['email'];
       $patient->genre = $_POST['genre'];
       $patient->situationFamilliale = $_POST['situationFamilliale'];

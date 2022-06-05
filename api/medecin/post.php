@@ -8,8 +8,6 @@ include_once '../../utils/functions.php';
 include '../../database/connectionPDO.php';
 include '../../services/medecinService.php';
 
-
-
 if (
    isset($_POST['cin']) and
    isset($_POST['nom']) and
@@ -66,11 +64,11 @@ if (
          echo json_encode($res);
       } else {
          http_response_code(400);
-         echo json_encode('erreur 1');
+         echo json_encode('form non valide');
       }
    } else {
       http_response_code(400);
-      echo json_encode('erreur 2');
+      echo json_encode('form non valide');
    }
 } else {
    http_response_code(400);

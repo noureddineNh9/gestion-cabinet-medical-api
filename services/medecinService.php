@@ -49,7 +49,7 @@ class MedecinService
    {
       try {
 
-         $query = "INSERT INTO Utilisateur VALUES(null, :cin, :nom, :prenom,:email, :motDePasse, :situationFamilliale, :genre, :tel, :adresse, :imageProfile, :dateNaissance, 'medecin')";
+         $query = "INSERT INTO Utilisateur VALUES(null, :cin, :nom, :prenom,:email, :motDePasse, :situationFamilliale, :genre, :tel, :adresse, NULL, :imageProfile, :dateNaissance, 'medecin')";
 
          $s = $this->conn->prepare($query);
 

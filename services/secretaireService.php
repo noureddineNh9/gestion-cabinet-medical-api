@@ -47,7 +47,7 @@ class SecretaireService
    {
       try {
 
-         $query = "INSERT INTO Utilisateur VALUES(null, :cin, :nom, :prenom,:email, :motDePasse, :situationFamilliale, :genre, :tel, :adresse, :imageProfile, :dateNaissance, 'secretaire')";
+         $query = "INSERT INTO Utilisateur VALUES(null, :cin, :nom, :prenom,:email, :motDePasse, :situationFamilliale, :genre, :tel, :adresse, NULL, :imageProfile, :dateNaissance, 'secretaire')";
 
          $stm = $this->conn->prepare($query);
 
