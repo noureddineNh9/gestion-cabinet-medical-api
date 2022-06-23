@@ -9,26 +9,32 @@ $idPrescription = $_POST['idPrescription'];
 $nom = $_POST['nom'];
 $descriptionTraitement = $_POST['descriptionTraitement'];
 $dureeParJour = $_POST['dureeParJour'];
-$dosage = $_POST['dosage'];
 
-if (!empty($idPrescription) ||
+$matin = $_POST['matin'];
+$midi = $_POST['midi'];
+$soir = $_POST['soir'];
+
+
+if (
+   !empty($idPrescription) ||
    !empty($nom) ||
    !empty($descriptionTraitement) ||
-   !empty($dureeParJour) ||
-   !empty($dosage))
-{
+   !empty($dureeParJour)
+) {
 
    try {
       $s = $conn->prepare("INSERT INTO 
-         Medicament(idPrescription, nom, descriptionTraitement, dureeParJour, dosage)
-         values (:idPrescription, :nom, :descriptionTraitement, :dureeParJour, :dosage)
+         Medicament(idPrescription, nom, descriptionTraitement, dureeParJour, matin, midi, soir)
+         values (:idPrescription, :nom, :descriptionTraitement, :dureeParJour, :matin, :midi, :soir)
       ");
 
       $s->bindParam('idPrescription', $idPrescription);
       $s->bindParam('nom', $nom);
       $s->bindParam('descriptionTraitement', $descriptionTraitement);
       $s->bindParam('dureeParJour', $dureeParJour);
-      $s->bindParam('dosage', $dosage);
+      $s->bindParam('matin', $matin);
+      $s->bindParam('midi', $midi);
+      $s->bindParam('soir', $soir);
 
       $s->execute();
 
@@ -37,12 +43,11 @@ if (!empty($idPrescription) ||
       $data = $res->fetch(PDO::FETCH_ASSOC);
 
       echo json_encode($data);
-
    } catch (PDOException $e) {
       http_response_code(400);
       echo json_encode('erreur');
    }
-}else{
+} else {
    http_response_code(400);
    echo json_encode('form non valide');
 }

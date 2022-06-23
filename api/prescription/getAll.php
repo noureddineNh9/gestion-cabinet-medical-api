@@ -12,8 +12,8 @@ try {
 
    $prescriptionList = array();
 
-   foreach($data as $row){
-      
+   foreach ($data as $row) {
+
       $idPrescription = $row['idPrescription'];
       // selectionner le dernier element
       $res2 = $conn->query("SELECT * FROM Medicament WHERE idPrescription=$idPrescription");
@@ -29,5 +29,3 @@ try {
    http_response_code(400);
    echo json_encode('erreur');
 }
-
-?>

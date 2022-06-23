@@ -22,8 +22,14 @@ if (
       $idPatient = $_POST['idPatient'];
 
       try {
-         $res = $conn->query("INSERT INTO ElementSante(nom, description, idPatient) 
-                              values('$nom','$description', $idPatient)");
+         $res = $conn->prepare("INSERT INTO ElementSante(nom, description, idPatient) 
+                              values(:nom,:description, :idPatient)");
+
+         $res->bindParam('nom', $nom);
+         $res->bindParam('description', $description);
+         $res->bindParam('idPatient', $idPatient);
+
+         $res->execute();
 
          // selectionner le dernier element
          $res2 = $conn->query("SELECT * FROM ElementSante ORDER BY idElement DESC LIMIT 1;");

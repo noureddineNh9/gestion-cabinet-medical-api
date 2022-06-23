@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 05, 2022 at 02:55 PM
+-- Generation Time: Jun 23, 2022 at 02:00 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.2
 
@@ -20,86 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `cabinet_medical_db`
 --
-
-DELIMITER $$
---
--- Procedures
---
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ajouterUtilisateur_pr` (IN `v_cin` VARCHAR(50), IN `v_nom` VARCHAR(50), IN `v_prenom` VARCHAR(50), IN `v_email` VARCHAR(50), IN `v_motDePasse` VARCHAR(80), IN `v_situationFamilliale` VARCHAR(50), IN `v_genre` VARCHAR(25), IN `v_tel` VARCHAR(50), IN `v_adresse` VARCHAR(255), IN `v_imageProfile` VARCHAR(255), IN `v_dateNaissance` DATE, IN `v_type` VARCHAR(25))  BEGIN
-
-   DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
-   BEGIN
-    	ROLLBACK;
-         SIGNAL SQLSTATE '23000'
-			SET MESSAGE_TEXT = 'Error in creating user';
-     	   -- SELECT 'Error creating user' AS error;
-   END;
-   
-   START TRANSACTION;
-   
-   INSERT INTO Utilisateur(`cin`, `nom`, `prenom`, `email`, `motDePasse`, `situationFamilliale`, `genre`, `tel`, `adresse`, `imageProfile`, `dateNaissance`, `type`) 
-   VALUES(v_cin,v_nom,v_prenom,v_email, v_motDePasse, v_situationFamilliale,v_genre,v_tel,v_adresse,v_imageProfile,v_dateNaissance,v_type);
-
-   SELECT MAX(idUtilisateur) INTO @idUtilisateur FROM Utilisateur; 
-
-   IF v_type = 'medecin' THEN
-      INSERT INTO Medecin(`idUtilisateur`) VALUES (@idUtilisateur);
-   ELSEIF v_type = 'patient' THEN
-      INSERT INTO Patient(`idUtilisateur`) VALUES (@idUtilisateur);   
-   ELSEIF v_type = 'secretaire' THEN
-      INSERT INTO Secretaire(`idUtilisateur`) VALUES (@idUtilisateur);
-   ELSE 
-      SIGNAL SQLSTATE '23000';
-   END IF;
-
-
-   SELECT idUtilisateur, cin, nom, prenom, email, situationFamilliale, genre, tel, adresse, imageProfile, dateNaissance,  type 
-   FROM Utilisateur 
-   WHERE idUtilisateur=@idUtilisateur;
-   
-   COMMIT;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `modifierUtilisateur_pr` (IN `v_idUtilisateur` INT, IN `v_cin` VARCHAR(50), IN `v_nom` VARCHAR(50), IN `v_prenom` VARCHAR(50), IN `v_email` VARCHAR(50), IN `v_situationFamilliale` VARCHAR(50), IN `v_genre` VARCHAR(25), IN `v_tel` VARCHAR(50), IN `v_adresse` VARCHAR(255), IN `v_imageProfile` VARCHAR(255), IN `v_dateNaissance` DATE)  BEGIN
-
-   DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
-   BEGIN
-    	ROLLBACK;
-         SIGNAL SQLSTATE '23000'
-			SET MESSAGE_TEXT = 'Error in creating user';
-     	   -- SELECT 'Error creating user' AS error;
-   END;
-   
-   START TRANSACTION;
-
-   IF v_imageProfile != '' THEN
-      UPDATE Utilisateur SET 
-      imageProfile=v_imageProfile
-      WHERE idUtilisateur=v_idUtilisateur;
-   END IF;
-
-   UPDATE Utilisateur SET 
-            cin=v_cin,
-            nom=v_nom,
-            prenom=v_prenom,
-            email=v_email,
-            situationFamilliale=v_situationFamilliale,
-            genre=v_genre,
-            tel=v_tel,
-            adresse=v_adresse,
-            dateNaissance=v_dateNaissance
-            WHERE idUtilisateur=v_idUtilisateur;
-
-   SELECT idUtilisateur, cin, nom, prenom, email, situationFamilliale, genre, tel, adresse, imageProfile, dateNaissance, type 
-   FROM Utilisateur 
-   WHERE idUtilisateur=v_idUtilisateur;
-   
-   COMMIT;
-
-    
-END$$
-
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -141,7 +61,11 @@ CREATE TABLE `Antecedent` (
 INSERT INTO `Antecedent` (`idAntecedent`, `nom`, `description`, `type`, `date`, `idPatient`) VALUES
 (2, 'azeaze', 'sdfsdfds', 'psychologue', '2022-05-26', 12),
 (4, 'vaccin', 'qsdsq sqdq sfcv fvgsdvpas de prescription\r\nds sd sdgsdg', 'medical', '2009-02-01', 12),
-(5, 'grvdfvgdf', 'fgdvcqfgh,;j:   ythgrghj i; kliukyjthrgfe', 'medical', '2006-11-11', 12);
+(5, 'grvdfvgdf', 'fgdvcqfgh,;j:   ythgrghj i; kliukyjthrgfe', 'medical', '2006-11-11', 12),
+(6, 'conflit ', 'conflit à l\'école avec ses copains : ne supporte pas d\'être mis à l\'écart / frustrations', 'psychologue', '2010-03-19', 72),
+(7, 'brûlure', 'brûlure main droite, a touché la porte du four à pizza', 'traumas', '2004-02-09', 72),
+(8, 'douloureuse', 'séparation parents douloureuse, trouble du sommeil et refus de s\'alimenter.', 'psychologue', '2017-09-09', 72),
+(9, 'vaccin', 'corona virus', 'medical', '2021-07-04', 72);
 
 -- --------------------------------------------------------
 
@@ -162,9 +86,12 @@ CREATE TABLE `Audio` (
 --
 
 INSERT INTO `Audio` (`idAudio`, `url`, `date`, `idCompteRendu`, `idSecretaire`) VALUES
-(18, '/uploads/audio/6287f8122c35b.mp3', '2022-05-20', 38, 8),
 (21, '/uploads/audio/62953e7df2176.mp3', '2022-05-30', 26, 28),
-(22, '/uploads/audio/6298b78c27e7a.mp3', '2022-06-02', 40, 28);
+(22, '/uploads/audio/6298b78c27e7a.mp3', '2022-06-02', 40, 28),
+(23, '/uploads/audio/62a110b15688a.mp3', '2022-06-08', 41, 28),
+(25, '/uploads/audio/62b06f11b2959.mp3', '2022-06-20', 43, 8),
+(26, '/uploads/audio/62b070d7a4447.mp3', '2022-06-20', 44, 8),
+(27, '/uploads/audio/62b0729de288d.mp3', '2022-06-20', 45, 8);
 
 -- --------------------------------------------------------
 
@@ -179,19 +106,21 @@ CREATE TABLE `CompteRendu` (
   `date` date DEFAULT curdate(),
   `type` varchar(25) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
-  `idConsultation` int(11) DEFAULT NULL,
-  `idSecretaire` int(11) DEFAULT NULL
+  `idConsultation` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `CompteRendu`
 --
 
-INSERT INTO `CompteRendu` (`idCompteRendu`, `nom`, `description`, `date`, `type`, `url`, `idConsultation`, `idSecretaire`) VALUES
-(26, 'AZERTYUI', 'bgbgbgb', '2022-05-15', 'popoyyy', '', 4, NULL),
-(37, 'oioio', 'ppppp', '2022-05-18', 'ioioi', '/uploads/compteRendu/6285375a4e409.doc', 4, NULL),
-(38, 'zerzerze', 'sqfqsfd', '2022-05-20', ' fdgdfg', '', 5, NULL),
-(40, 'ghgjh', 'ghjjjjjjjjjjjj', '2022-06-02', 'oiii', NULL, 4, NULL);
+INSERT INTO `CompteRendu` (`idCompteRendu`, `nom`, `description`, `date`, `type`, `url`, `idConsultation`) VALUES
+(26, 'AZERTYUI', 'bgbgbgb', '2022-05-15', 'popoyyy', '', 4),
+(37, 'oioio', 'ppppp', '2022-05-18', 'ioioi', '/uploads/compteRendu/6285375a4e409.doc', 4),
+(40, 'ghgjh', 'ghjjjjjjjjjjjj', '2022-06-02', 'oiii', NULL, 4),
+(41, 'eza', 'cdxvsdv', '2022-06-08', 'fdsq', NULL, 9),
+(43, 'compte rendu de consultation', '', '2022-06-20', 'crc', '/uploads/compteRendu/62b06f2fe4b46.pdf', 13),
+(44, 'compte rendu de consultation', '', '2022-06-20', 'crc', NULL, 14),
+(45, 'compte rendu radiologie', '', '2022-06-20', 'crr', '/uploads/compteRendu/62b072de0729e.pdf', 14);
 
 -- --------------------------------------------------------
 
@@ -219,25 +148,21 @@ CREATE TABLE `Consultation` (
 INSERT INTO `Consultation` (`idConsultation`, `motif`, `dateCreation`, `duree`, `type`, `hauteur`, `poid`, `remarques`, `idElement`, `idMedecin`) VALUES
 (2, 'Returns a string with a locality-sensitive representation of the time portion of this date, based on system settings. az\r\n\r\n', '2022-05-12', 45, 'visite', 2345, 44, 'Returns a string with a locality-sensitive representation of the time portion of this date, based on system settings.\r\n\r\nReturns a string with \r\n\r\n', 6, 2),
 (3, 'Consultation créeConsultation créeConsultation crée', '2022-05-12', 343, 'visite', 187, 80, 'Consultation créeConsultation créeConsultation crée', 6, 2),
-(4, 'dsqfsdfsd', '2022-05-13', 33, 'visite', 33, 54, 'fsdfsdfds kbdddd', 1, 2),
-(5, 'fdsfsd fd sdgdfgs gsfg', '2022-05-20', 23, 'visite', 123, 34, 'cdsvefsevgdsf gth fgnhgf fgh fgh', 7, 2),
+(4, 'dsqfsdfsd', '2022-05-13', 33, 'visite', 33, 54, 'fsdfsdfds kbdddd', 1, 21),
+(5, 'azertyuio', '2022-05-20', 23, 'visite', 123, 34, 'cdsvefsevgdsf gth fgnhgf fgh fgh', 7, 2),
 (6, 'dsqdqsdqs', '2022-05-29', 23, 'controle', 333, 33, '', 6, 2),
 (9, ' dfsuigf sudi fus dfg sdfu sdlf shd jfgsdhj lfdsgh lfjgsqd jghqjlsdf ghlqjs djg', '2022-05-30', 43, 'controle', 23, 443, 'F HZ HCSLJ HCSJ QHJCL Hq jsc jkqs hcj dqshl vs H H DHVLJdsh vjhs dvjlsd', 1, 2),
 (10, 'The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value.', '2022-06-05', 23, 'controle', 34, 54, 'The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value.', 1, 2),
 (11, 'If you want a client-side solution to generate PDF document, JavaScript is the easiest way to convert HTML to PDF. There are various JavaScript library is available to generate PDF from HTML. ', '2022-06-05', 56, 'controle', 343, 54, 'If you want a client-side solution to generate PDF document, JavaScript is the easiest way to convert HTML to PDF. ', 1, 2),
-(12, 'In this example script, we will share code snippets to handle PDF creation and HTML to PDF conversion related operations using JavaScript.', '2022-06-05', 76, 'visite', 44, 54, 'In this example script, we will share code snippets to handle PDF creation and HTML to PDF conversion related operations using JavaScript.', 1, 2);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `Diplome`
---
-
-CREATE TABLE `Diplome` (
-  `idDiplome` int(11) NOT NULL,
-  `nom` varchar(25) NOT NULL,
-  `idMedecin` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+(12, 'In this example script, we will share code snippets to handle PDF creation and HTML to PDF conversion related operations using JavaScript.', '2022-06-05', 76, 'visite', 44, 54, 'In this example script, we will share code snippets to handle PDF creation and HTML to PDF conversion related operations using JavaScript.', 1, 2),
+(13, 'une douleur mineure au bas du dos', '2022-03-15', 60, 'visite', 170, 60, '', 12, 21),
+(14, 'Le mal de dos a augmenté dans le dos, ce qui a conduit à l\'incapacité de bouger\r\n\r\n\r\n', '2022-04-09', 60, 'controle', 170, 62, '', 12, 21),
+(15, 'Après avoir vu les radiologie , il nous semble qu\'on est au début du développement de la maladie siatique en première phase.', '2022-04-27', 60, 'visite', 170, 60, '', 12, 21),
+(16, 'En raison de l\'évolution rapide de la maladie, une opération d\'urgence est nécessaire.', '2022-05-10', 90, 'visite', 170, 56, 'Une inflammation du muscle piriforme.', 12, 21),
+(17, 'Après la réussite de l\'opération, on remarque la réactivité du corps réactif et la remarquable hospitalisation', '2022-05-20', 60, 'controle', 171, 57, 'Le patient devrait avoir au moins 10 séances de formation en médecine', 12, 21),
+(18, 'controle après le kinésithérapie on note l\'amélioration de l\'etat du patient.', '2022-06-19', 45, 'controle', 171, 59, '\r\nLe patient doit éviter de lever des poids gros', 12, 21),
+(19, 'Il arrive que le patient ait du mal à respirer certaines nuits.', '2022-05-17', 60, 'visite', 170, 63, 'cette allergie survient en présence de aéroallergènes, tels que le pollen, la poussière, la moisissure.', 11, 21),
+(20, 'L\'état du patient était perturbé et avait de la difficulté à respirer chaque nuit.', '2022-06-09', 90, 'visite', 170, 61, 'La possibilité que le patient soit asthmatique.', 11, 21);
 
 -- --------------------------------------------------------
 
@@ -261,7 +186,9 @@ INSERT INTO `Document` (`idDocument`, `nom`, `url`, `idExamen`) VALUES
 (21, 'dsqsdqd', '/uploads/compteRendu/628971b937cc3.doc', 5),
 (22, 'ioioio', '/uploads/compteRendu/62953ca5a5b1d.docx', 5),
 (23, 'image', '/uploads/compteRendu/62953ef651849.png', 9),
-(24, 'vfvfv', '/uploads/compteRendu/629540c796c5e.png', 10);
+(24, 'vfvfv', '/uploads/compteRendu/629540c796c5e.png', 10),
+(26, 'image', '/uploads/compteRendu/62b071f5ce27d.png', 11),
+(27, 'fichier', '/uploads/compteRendu/62b0730c6d530.pdf', 11);
 
 -- --------------------------------------------------------
 
@@ -284,7 +211,9 @@ CREATE TABLE `ElementSante` (
 INSERT INTO `ElementSante` (`idElement`, `nom`, `description`, `dateCreation`, `idPatient`) VALUES
 (1, 'Fièvre', '\'aze\' is assigned a value but never used  no-unused-varsùù azertyuio ', '2022-05-11', 12),
 (6, 'diabète', 'ue le patient apporte lors de la consultation comme demande, plainte, symptôme. C\'est la clé  ', '2022-05-11', 12),
-(7, 'el1', 'ezaeaze', '2022-05-20', 19);
+(7, 'el1', 'ezaeaze', '2022-05-20', 19),
+(11, 'l\'allergie respiratoire ', 'maladie chronique , l\'allergie respiratoire est une reaction immunitaire inappropiée de notre organisme ', '2022-06-19', 72),
+(12, 'siatique', 'une douleur du membre inférieur située sur le trajet du nerf sciatique.', '2022-06-19', 72);
 
 -- --------------------------------------------------------
 
@@ -308,7 +237,8 @@ CREATE TABLE `Examen` (
 INSERT INTO `Examen` (`idExamen`, `nom`, `description`, `date`, `type`, `idConsultation`) VALUES
 (5, 'radio 4', 'bvbvbcv', '2022-05-15', 'rd', 4),
 (9, 'scanner', 'fsdfsdf', '2022-05-19', 'fdslfsdf', 4),
-(10, 'dsdqsd', 'dsqds', '2022-05-30', 'cxwcwx', 4);
+(10, 'dsdqsd', 'dsqds', '2022-05-30', 'cxwcwx', 4),
+(11, 'La radiographie du rachis lombaire', '', '2022-06-20', 'radio', 14);
 
 -- --------------------------------------------------------
 
@@ -326,11 +256,9 @@ CREATE TABLE `Medecin` (
 --
 
 INSERT INTO `Medecin` (`idUtilisateur`, `idService`) VALUES
-(21, 7),
-(34, 7),
-(2, 8),
-(26, 8),
-(27, 18);
+(2, 7),
+(34, 8),
+(21, 18);
 
 -- --------------------------------------------------------
 
@@ -343,7 +271,9 @@ CREATE TABLE `Medicament` (
   `nom` varchar(50) NOT NULL,
   `descriptionTraitement` text DEFAULT NULL,
   `dureeParJour` int(11) DEFAULT NULL,
-  `dosage` varchar(25) DEFAULT NULL,
+  `matin` enum('avant','apres','auMilieu','aucun') DEFAULT 'aucun',
+  `midi` enum('avant','apres','auMilieu','aucun') DEFAULT 'aucun',
+  `soir` enum('avant','apres','auMilieu','aucun') DEFAULT 'aucun',
   `idPrescription` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -351,11 +281,14 @@ CREATE TABLE `Medicament` (
 -- Dumping data for table `Medicament`
 --
 
-INSERT INTO `Medicament` (`idMedicament`, `nom`, `descriptionTraitement`, `dureeParJour`, `dosage`, `idPrescription`) VALUES
-(3, 'remix', 'ds qgdjqsgljdk qsgljd qsglhj dqgjls dk', 234, '23', 7),
-(6, 'qsd', 'qsdqsd', 22, '33', 7),
-(9, 'remix', 'kf,sof,sk', 12, '100m', 8),
-(14, 'fdfsd', 'sdfsdf', 3, '4', 8);
+INSERT INTO `Medicament` (`idMedicament`, `nom`, `descriptionTraitement`, `dureeParJour`, `matin`, `midi`, `soir`, `idPrescription`) VALUES
+(20, 'sdfgh', 'zert', 21, 'aucun', 'avant', 'apres', 6),
+(21, 'hygtfrds', 'gggg', 32, NULL, NULL, NULL, 6),
+(22, 'voltaren 25mg', '2 capsule a chaque fois', 2, NULL, NULL, NULL, 9),
+(23, 'farmablu 100mg', '1 capsule ', 1, 'apres', 'aucun', 'aucun', 9),
+(24, 'celebrex 200mg', '3 capsule par jour', 15, 'avant', 'avant', 'avant', 10),
+(25, 'aleve 220 mg', '1 capsule par jour', 10, 'aucun', 'aucun', 'avant', 10),
+(26, 'naprosyn 500mg', '1 capsule', 15, 'apres', 'aucun', 'apres', 10);
 
 -- --------------------------------------------------------
 
@@ -378,7 +311,8 @@ INSERT INTO `Patient` (`idUtilisateur`, `groupeSanguin`, `decede`) VALUES
 (17, 'O-', 0),
 (19, '', 0),
 (20, '', 0),
-(35, '', 0);
+(35, '', 0),
+(72, '', 0);
 
 -- --------------------------------------------------------
 
@@ -399,7 +333,10 @@ CREATE TABLE `Prescription` (
 INSERT INTO `Prescription` (`idPrescription`, `conseilsMedicaux`, `idConsultation`) VALUES
 (6, NULL, 3),
 (7, 'azFF', 2),
-(8, 'tyutyuddddddd', 4);
+(8, 'tyutyuddddddd', 4),
+(9, NULL, 13),
+(10, NULL, 14),
+(11, NULL, 15);
 
 -- --------------------------------------------------------
 
@@ -422,12 +359,15 @@ CREATE TABLE `RDV` (
 --
 
 INSERT INTO `RDV` (`idRDV`, `dateCreation`, `dateRDV`, `type`, `status`, `idPatient`, `idMedecin`) VALUES
-(9, '2022-05-19', '2022-01-13 14:00:00', 'controle', 'enAttente', 12, 2),
-(11, '2022-05-22', '2022-05-19 09:04:00', 'controle', 'confirme', 12, 2),
-(12, '2022-06-02', '2022-06-03 21:27:00', 'controle', 'enAttente', 12, 2),
-(13, '2022-06-02', '2022-06-09 21:47:00', 'visite', 'confirme', 12, 2),
+(9, '2022-05-19', '2022-06-09 09:00:00', 'visite', 'confirme', 19, 2),
+(11, '2022-05-22', '2022-06-08 09:00:00', 'controle', 'confirme', 17, 2),
+(12, '2022-06-02', '2022-06-21 08:00:00', 'controle', 'confirme', 12, 2),
+(13, '2022-06-02', '2022-06-06 23:00:00', 'visite', 'enAttente', 12, 2),
 (14, '2022-06-02', '2022-06-17 21:48:00', 'controle', 'enAttente', 17, 2),
-(15, '2022-06-03', '2022-06-04 09:00:00', 'controle', 'confirme', 35, 2);
+(15, '2022-06-03', '2022-06-21 10:00:00', 'controle', 'confirme', 35, 2),
+(16, '2022-06-19', '2022-06-27 07:00:00', 'visite', 'confirme', 72, 21),
+(17, '2022-06-19', '2022-07-01 08:00:00', 'visite', 'confirme', 17, 21),
+(18, '2022-06-19', '2022-06-30 10:00:00', 'controle', 'confirme', 20, 21);
 
 -- --------------------------------------------------------
 
@@ -445,8 +385,7 @@ CREATE TABLE `Secretaire` (
 
 INSERT INTO `Secretaire` (`idUtilisateur`) VALUES
 (8),
-(28),
-(29);
+(28);
 
 -- --------------------------------------------------------
 
@@ -464,9 +403,10 @@ CREATE TABLE `Service` (
 --
 
 INSERT INTO `Service` (`idService`, `nom`) VALUES
-(7, 'service A'),
+(7, 'Allergologie'),
 (8, 'service B'),
-(18, 'service C');
+(18, 'Orthopédie'),
+(24, 'Matérnités');
 
 -- --------------------------------------------------------
 
@@ -496,19 +436,17 @@ CREATE TABLE `Utilisateur` (
 --
 
 INSERT INTO `Utilisateur` (`idUtilisateur`, `cin`, `nom`, `prenom`, `email`, `motDePasse`, `situationFamilliale`, `genre`, `tel`, `adresse`, `ville`, `imageProfile`, `dateNaissance`, `type`) VALUES
-(2, 'BE25432', 'Dr. Khalid', 'kalil', 'khalid@mail.com', '$2y$10$1KRrakC.r13AyvXxKkUNf.yKDFFw4R80gUogPRLxxjBQm0dCWCd/S', 'marie', 'homme', '0987654321', 'qsdq', NULL, '/uploads/images/6289290e3cc24.jpg', '2022-05-01', 'medecin'),
-(8, 'TR35678', 'faearr', 'koo', 'fae@mail.com', '$2y$10$sbp5cEwHKWq1f7i/SHqtxewOXh0OH/MaY8BqxFwTkCUWDqgX/bFea', 'marie', 'femme', 'qsdqs', 'qsdqsd', NULL, '/uploads/images/628a63ac979fb.jpg', '1988-05-19', 'secretaire'),
-(12, 'GT3454', 'Mohammed', 'Gholam', 'mohammed@mail.com', '$2y$10$bfaW1oUHqUQIrzie4SfiquEYlD4SBW.pYtDkmXNHSAWD2nvfQl9wm', 'marie', 'homme', '0345678987', 'qsd', NULL, '/uploads/images/62799ce9e6e82.jpg', '1993-05-10', 'patient'),
-(17, 'ER32221', 'omar', 'sabir', 'omar@mail.com', 'qsdqs', 'celibataire', 'homme', '0543456777', 'casablanca, 34567', NULL, '/uploads/images/627d9eed7eb4e.jpg', '1999-05-06', 'patient'),
-(19, 'ER23456', 'hamza', 'ghali', 'hamza@mail.com', '123', 'marie', 'homme', '0987654355', 'marakkech 456789, raz', NULL, '/uploads/images/6287e74615083.jpg', '1965-11-11', 'patient'),
-(20, 'dqsdqs', 'dsqdsq', 'qsdqsd', 'qsdqs', '$2y$10$ozP35YQVOBmo/uizAgE/4u7aDEOfHa1qy621TcHosH7ZcJ2Lhn/0u', 'marie', 'homme', 'dsqdqsdqs', 'cxdwvdsezrfsdf', NULL, '/uploads/images/628a11726abb6.png', '2020-05-10', 'patient'),
-(21, 'DE345678', 'Dr.amine', 'lahlou', 'lahlou@mail.com', '$2y$10$sjjMtWHl3MLhteriLyd9YOrLJvvg11LU6Ae5rO7d0wZ.qWKvgGL0S', 'marie', 'homme', '0987654321', 'Casablanca , 23456789\r\nacd', NULL, '/uploads/images/628ab9e741f4d.png', '1997-12-12', 'medecin'),
-(26, 'ezaeaze', 'aze', 'azeaze', 'fdsfdsf', '$2y$10$6XohxCId4aOkOHE/dgQN7.hJWPKAFAfy2/KCqK6QRSPTzmPyaz36q', 'celibataire', 'homme', 'fdsfsdf', 'sdfsdfs', NULL, '/uploads/images/628ab580af3dd.png', '2022-05-05', 'medecin'),
-(27, 'fsdfsdf', 'fsdfsd', 'sdfdsf', 'sdfds@miiil', '$2y$10$t8Rywi7o2tYOVB5cXJWS0e6FW44IkBBetRa1uyMnl51HEU.I6eaF.', 'marie', 'homme', 'sdfsd', 'sdfsd', NULL, '/uploads/images/628abe168eb78.png', '2022-05-05', 'medecin'),
-(28, 'jkhjk', 'frfrfr', 'jhjgh', 'hjkhjk', '$2y$10$FISUXDODDZOjqr6dAlxm2.p1kaL/jf.Z4CbE9XhegFtByxdBVsiwa', 'celibataire', 'femme', 'hjkhj', 'hjkhj', NULL, '/uploads/images/6299386444be7.jpg', '2022-05-06', 'secretaire'),
-(29, 'vbnvb', 'ana', 'vbnvbn', 'vbnvb', '$2y$10$K09pX5oTArbQYH.CvXauXe/XG029r64vOELYRSiQn9njGnfR72OR6', 'celibataire', 'femme', 'nxgfncvn', 'vvv', NULL, '/uploads/images/628ac5e8173b6.png', '2022-05-10', 'secretaire'),
-(34, 'A3RRX5', 'ssss', 'cqcq', 'admindsqd', '$2y$10$hb4N89Nx/cyTsHyDhzEjW.4BVYeQYCmChhAU/CL5N2D.Ozyza0kOW', 'marie', 'homme', '055557676', 'dfsfsdf', NULL, '/uploads/images/62972706d2df1.jpg', '2022-06-09', 'medecin'),
-(35, 'dqsjfq', 'amine', 'kafri', 'qslcùmkqslcqs', '$2y$10$TaoYHTL7eIcPw.sxp2nVxe9TDDI/K5vo5iUvIvlvkJEpVIdwm4hGi', 'marie', 'homme', 'fdsjhfsdkj', 'sdjhfkjds', 'azeaz', '/uploads/images/6297cd273c7c7.jpeg', '1999-02-22', 'patient');
+(2, 'BE25432', 'Dr. Khalid', 'kalil', 'khalid@mail.com', '$2y$10$JfObH/5jIOvcEqFW3KlJd.djsU6Zwlj6x.6liZU9CS3kf8O0HQoki', 'marie', 'homme', '0987654321', 'qsdq', NULL, '/uploads/images/6289290e3cc24.jpg', '2022-05-01', 'medecin'),
+(8, 'TR35678', 'Amina', 'saki', 'amina@mail.com', '$2y$10$sbp5cEwHKWq1f7i/SHqtxewOXh0OH/MaY8BqxFwTkCUWDqgX/bFea', 'marie', 'femme', 'qsdqs', 'qsdqsd', NULL, '/uploads/images/628a63ac979fb.jpg', '1988-05-19', 'secretaire'),
+(12, 'GT3454', 'Mohammed', 'Gholam', 'mohammed@mail.com', '$2y$10$bfaW1oUHqUQIrzie4SfiquEYlD4SBW.pYtDkmXNHSAWD2nvfQl9wm', 'marie', 'homme', '0345678987', 'qsd', 'casa', '/uploads/images/629d1e939d255.jpeg', '1993-05-10', 'patient'),
+(17, 'ER32221', 'omaima', 'sabir', 'sabir@mail.com', 'qsdqs', 'celibataire', 'femme', '0543456777', 'rabat', 'rabat', '/uploads/images/62a0eb07cced2.jpeg', '2013-05-06', 'patient'),
+(19, 'ER23456', 'fatima', 'ghilal', 'ghilal@mail.com', '123', 'marie', 'femme', '0987654355', 'marakkech 456789, raz', 'marakkech', '/uploads/images/62a0eb4a0bbfa.jpg', '1998-11-11', 'patient'),
+(20, 'ML9327', 'abdellah', 'ben aissa', 'abdellah@mail.com', '$2y$10$ozP35YQVOBmo/uizAgE/4u7aDEOfHa1qy621TcHosH7ZcJ2Lhn/0u', 'celibataire', 'homme', '0644259764', 'agadir 84765 ', 'agadir', '/uploads/images/62a0ea06ee4ba.jpg', '2000-05-10', 'patient'),
+(21, 'DE345678', 'Dr. Amine', 'lahlou', 'lahlou@mail.com', '$2y$10$lRP6aLK49pC4fye11sWMzu4m9cyHNZCFqUat75nV01oq3XaFHEpqa', 'marie', 'homme', '0987654321', 'Casablanca , 23456789\r\nacd', NULL, '/uploads/images/62a1018612e39.jpg', '1987-12-12', 'medecin'),
+(28, 'LO63228', 'ghita', 'bennani', 'bennani@mail.com', '$2y$10$FISUXDODDZOjqr6dAlxm2.p1kaL/jf.Z4CbE9XhegFtByxdBVsiwa', 'celibataire', 'femme', '0954532674', 'maroc, casablanca 6333', NULL, '/uploads/images/62a10240c4cc5.jpg', '1998-02-21', 'secretaire'),
+(34, 'VE346534', 'Dr. Rachid', 'Tamir', 'rachid@mail.com', '$2y$10$85A3ibKfIrbpSBwXTucjx.DXj32bGUfTAz/5YYQAshS4wdf.osU1i', 'celibataire', 'homme', '0655775522', 'Agadir 4321', NULL, '/uploads/images/62a1019337064.jpg', '1997-06-09', 'medecin'),
+(35, 'YH8543', 'amine', 'lotfi', 'lotfi@mail.com', '$2y$10$TaoYHTL7eIcPw.sxp2nVxe9TDDI/K5vo5iUvIvlvkJEpVIdwm4hGi', 'marie', 'homme', '0766539674', 'beni mellal 978986', 'beni mellal', '/uploads/images/62a0ea75156d7.jpg', '1986-02-22', 'patient'),
+(72, 'P337115', 'ait touchent', 'abdellatif', 'abdellatif@gmail.com ', '$2y$10$svYN3q/0gIwCpmzq/h5As.ED5nXxRV58blmAH/A0kuJZQYTzC0pwK', 'marie', 'homme', '0767803598', 'casablanca moustakbal', 'ouarzazate', '/uploads/images/62af02a814ba4.jpeg', '1999-05-16', 'patient');
 
 --
 -- Indexes for dumped tables
@@ -540,8 +478,7 @@ ALTER TABLE `Audio`
 --
 ALTER TABLE `CompteRendu`
   ADD PRIMARY KEY (`idCompteRendu`),
-  ADD KEY `idConsultation` (`idConsultation`),
-  ADD KEY `idSecretaire` (`idSecretaire`);
+  ADD KEY `idConsultation` (`idConsultation`);
 
 --
 -- Indexes for table `Consultation`
@@ -549,13 +486,6 @@ ALTER TABLE `CompteRendu`
 ALTER TABLE `Consultation`
   ADD PRIMARY KEY (`idConsultation`),
   ADD KEY `idElement` (`idElement`),
-  ADD KEY `idMedecin` (`idMedecin`);
-
---
--- Indexes for table `Diplome`
---
-ALTER TABLE `Diplome`
-  ADD PRIMARY KEY (`idDiplome`),
   ADD KEY `idMedecin` (`idMedecin`);
 
 --
@@ -642,79 +572,73 @@ ALTER TABLE `Utilisateur`
 -- AUTO_INCREMENT for table `Antecedent`
 --
 ALTER TABLE `Antecedent`
-  MODIFY `idAntecedent` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idAntecedent` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `Audio`
 --
 ALTER TABLE `Audio`
-  MODIFY `idAudio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `idAudio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `CompteRendu`
 --
 ALTER TABLE `CompteRendu`
-  MODIFY `idCompteRendu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `idCompteRendu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `Consultation`
 --
 ALTER TABLE `Consultation`
-  MODIFY `idConsultation` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT for table `Diplome`
---
-ALTER TABLE `Diplome`
-  MODIFY `idDiplome` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idConsultation` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `Document`
 --
 ALTER TABLE `Document`
-  MODIFY `idDocument` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `idDocument` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `ElementSante`
 --
 ALTER TABLE `ElementSante`
-  MODIFY `idElement` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `idElement` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `Examen`
 --
 ALTER TABLE `Examen`
-  MODIFY `idExamen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `idExamen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `Medicament`
 --
 ALTER TABLE `Medicament`
-  MODIFY `idMedicament` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `idMedicament` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `Prescription`
 --
 ALTER TABLE `Prescription`
-  MODIFY `idPrescription` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idPrescription` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `RDV`
 --
 ALTER TABLE `RDV`
-  MODIFY `idRDV` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idRDV` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `Service`
 --
 ALTER TABLE `Service`
-  MODIFY `idService` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `idService` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `Utilisateur`
 --
 ALTER TABLE `Utilisateur`
-  MODIFY `idUtilisateur` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `idUtilisateur` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- Constraints for dumped tables
@@ -737,8 +661,7 @@ ALTER TABLE `Audio`
 -- Constraints for table `CompteRendu`
 --
 ALTER TABLE `CompteRendu`
-  ADD CONSTRAINT `CompteRendu_ibfk_1` FOREIGN KEY (`idConsultation`) REFERENCES `Consultation` (`idConsultation`),
-  ADD CONSTRAINT `CompteRendu_ibfk_2` FOREIGN KEY (`idSecretaire`) REFERENCES `Secretaire` (`idUtilisateur`);
+  ADD CONSTRAINT `CompteRendu_ibfk_1` FOREIGN KEY (`idConsultation`) REFERENCES `Consultation` (`idConsultation`);
 
 --
 -- Constraints for table `Consultation`
@@ -746,12 +669,6 @@ ALTER TABLE `CompteRendu`
 ALTER TABLE `Consultation`
   ADD CONSTRAINT `Consultation_ibfk_1` FOREIGN KEY (`idElement`) REFERENCES `ElementSante` (`idElement`),
   ADD CONSTRAINT `Consultation_ibfk_2` FOREIGN KEY (`idMedecin`) REFERENCES `Medecin` (`idUtilisateur`);
-
---
--- Constraints for table `Diplome`
---
-ALTER TABLE `Diplome`
-  ADD CONSTRAINT `Diplome_ibfk_1` FOREIGN KEY (`idMedecin`) REFERENCES `Medecin` (`idUtilisateur`);
 
 --
 -- Constraints for table `Document`
